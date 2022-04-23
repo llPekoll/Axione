@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  back:
+    build: .
+    command: uvicorn app.main:app --host 0.0.0.0 --port 80
+    volumes:
+      - ./app:/app
+    ports:
+      - 5000:80
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=axione
+      - POSTGRES_PORT=5432
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=axione
+    expose: 
+      - 5432
+
+volumes:
+  postgres_data:
