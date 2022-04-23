@@ -21,10 +21,8 @@ def init_db(db: Session):
     """ DB init """
     with open("/app/src/indicateurs-loyers-appartements.csv", "r") as csvfile:
         csvreader = csv.reader(csvfile, delimiter=";")
-        rows = []
         csvreader = list(csvreader)
         for row in csvreader:
-            rows.append(row)
             try:
                 ret = requests.get(
                     f"https://geo.api.gouv.fr/communes/{row[1]}?fields=nom,code,codesPostaux,codeDepartement,population&format=json"
@@ -35,8 +33,10 @@ def init_db(db: Session):
 
             ville = ret.get("nom")
             ville = unidecode.unidecode(ville).lower()
+            
             slug = f"{ville}-{row[1]}"
             req = requests.get(f"https://www.bien-dans-ma-ville.fr/{slug}/")
+            
             note = None
             if req.status_code == 200:
                 soup = BeautifulSoup(req.text, "html.parser")
